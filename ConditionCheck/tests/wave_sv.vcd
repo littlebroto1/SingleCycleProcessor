@@ -1,0 +1,38 @@
+$date
+	Tue Nov 15 11:34:02 2022
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module ConditionCheck $end
+$var wire 4 ! cond [3:0] $end
+$upscope $end
+$scope module ConditionCheck $end
+$var wire 1 " N $end
+$upscope $end
+$scope module ConditionCheck $end
+$var wire 1 # Z $end
+$upscope $end
+$scope module ConditionCheck $end
+$var wire 1 $ C $end
+$upscope $end
+$scope module ConditionCheck $end
+$var wire 1 % V $end
+$upscope $end
+$scope module ConditionCheck $end
+$var reg 1 & condEx $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+x&
+z%
+z$
+z#
+z"
+bz !
+$end
+#1
