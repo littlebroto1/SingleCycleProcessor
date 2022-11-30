@@ -53,4 +53,5 @@ async def test4_17(dut):
 
         await FallingEdge(dut.clk);
         
+    print("\n\nR0: ", dut.dp.rf.__getattr__('rf[0]').value.integer)
 
