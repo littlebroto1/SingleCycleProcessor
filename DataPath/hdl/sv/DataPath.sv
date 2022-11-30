@@ -3,12 +3,12 @@ module ARM(
   output  logic [31:0]  PC,
   input   logic [31:0]  Instr,
   output  logic         MemWrite,
-  output  logic [31:0]  ALUResult, WriteData,
+  output  logic [31:0]  MemAddr, WriteData,
   input   logic [31:0]  ReadData
 );
 
   logic [3:0] ALUFlags;
-  logic RegWrite, ALUSrc, MemtoReg, PCSrc;
+  logic RegWrite, ALUSrc, MemtoReg, PCSrc, AddrSrc;
   logic [1:0] RegSrc, ImmSrc, ALUControl;
 
   ControlUnit c(
@@ -25,7 +25,8 @@ module ARM(
               ALUSrc,
               ImmSrc,
               RegSrc,
-              ALUControl
+              ALUControl,
+              AddrSrc
   );
 
   DataPath dp(
@@ -40,9 +41,10 @@ module ARM(
               ALUFlags,
               PC,
               Instr,
-              ALUResult,
+              MemAddr,
               WriteData,
-              ReadData
+              ReadData,
+              AddrSrc
   );
 endmodule
 
@@ -58,13 +60,15 @@ module DataPath (
   output  logic [3:0]   ALUFlags,
   output  logic [31:0]  PC,
   input   logic [31:0]  Instr,
-  output  logic [31:0]  ALUResult, WriteData,
-  input   logic [31:0]  ReadData
+  output  logic [31:0]  MemAddr, WriteData,
+  input   logic [31:0]  ReadData,
+  input   logic         AddrSrc
 );
 
-  logic [31:0] PCNext, PCPlus4, PCPlus8, RD2;
+  logic [31:0] PCNext, PCPlus4, PCPlus8;
   logic [31:0] ExtImm, SrcA, SrcB, Result;
   logic [3:0]  RA1, RA2;
+  logic [31:0] Shifted, ALUResult;
 
   // next PC logic
   mux2 #(32)      pcmux(PCPlus4, Result, PCSrc, PCNext);
@@ -79,34 +83,45 @@ module DataPath (
   registerfile  rf(clk, RegWrite, RA1, RA2,
                   Instr[15:12],
                   Result,
-                  PCPlus8, SrcA, RD2);
+                  PCPlus8, SrcA, WriteData);
 
-  shift sh(RD2, Instr[11:7], Instr[6:5], WriteData); // Perform the shift;
+  shift sh(WriteData, Instr[11:7], Instr[6:5], Shifted); // Perform the shift;
 
-  mux2 #(32)    resmux(ALUResult, ReadData, MemtoReg, Result);
+  mux2 #(32)    resmux(MemAddr, ReadData, MemtoReg, Result);
   extender      ext(Instr[23:0], ImmSrc, ExtImm);
 
   // ALU logic
-  mux2 #(32)  srcbmux(WriteData, ExtImm, ALUSrc, SrcB);
+  mux2 #(32)  srcbmux(Shifted, ExtImm, ALUSrc, SrcB);
   ALU         alu(SrcA, SrcB, ALUControl, ALUResult, ALUFlags);
+
+  mux2 #(32)  MemAddrMux(ALUResult,SrcB,AddrSrc,MemAddr);
 
   
 
-  /* `ifdef  COCOTB_SIM 
+   `ifdef  COCOTB_SIM 
   initial
   begin
       $dumpfile("wave_sv.vcd");
       $dumpvars(
         0,
-        cond,
-        N,
-        Z,
-        C,
-        V,
-        condEx
+        clk, reset,
+        SrcA,SrcB,
+        RegSrc,
+        RegWrite,
+        ImmSrc,
+        ALUSrc,
+        ALUControl,
+        MemtoReg,
+        PCSrc,
+        ALUFlags,
+        PC,
+        Instr,
+        MemAddr, WriteData,
+        ReadData,
+        Result
       );
       #5;
   end
-  `endif */
+  `endif 
   
 endmodule

@@ -11,7 +11,8 @@ module Decoder (
   output  logic [1:0]   RegSrc,
   output  logic         NoWrite,
   output  logic [1:0]   ALUControl,
-  output  logic [1:0]   FlagW
+  output  logic [1:0]   FlagW,
+  output  logic         DataSrc
 );
 
 logic ALUOp;
@@ -44,7 +45,8 @@ ALUDecoder alu_decoder(
   Funct[0],   // S
   NoWrite,
   ALUControl,
-  FlagW
+  FlagW,
+  DataSrc
 );
 
 `ifdef  COCOTB_SIM 

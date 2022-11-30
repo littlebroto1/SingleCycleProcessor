@@ -4,7 +4,8 @@ module ALUDecoder (
   input  logic        S,    // Funct[0]
   output logic        NoWrite,
   output logic [1:0]  ALUControl,
-  output logic [1:0]  FlagW
+  output logic [1:0]  FlagW,
+  output logic        AddrSrc
 );
 
 always_comb begin
@@ -35,6 +36,7 @@ always_comb begin
 end
 
 assign NoWrite = (cmd == 4'b1010) & ALUOp;
+assign AddrSrc = (cmd == 4'b1101) & ALUOp;
 
 `ifdef  COCOTB_SIM 
 initial
@@ -47,7 +49,8 @@ initial
       S,
       NoWrite,
       ALUControl,
-      FlagW
+      FlagW,
+      AddrSrc
     );
     #5;
  end

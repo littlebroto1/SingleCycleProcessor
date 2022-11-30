@@ -12,7 +12,8 @@ module ControlUnit (
   output  logic         ALUSrc,
   output  logic [1:0]   ImmSrc,
   output  logic [1:0]   RegSrc,
-  output  logic [1:0]   ALUControl
+  output  logic [1:0]   ALUControl,
+  output  logic         AddrSrc
 );
 
 logic [1:0] FlagW;
@@ -48,25 +49,35 @@ Decoder decode(
   RegSrc,
   NoWrite,
   ALUControl,
-  FlagW
+  FlagW,
+  AddrSrc
 );
 
 
-/* `ifdef  COCOTB_SIM 
+ `ifdef  COCOTB_SIM 
 initial
  begin
     $dumpfile("wave_sv.vcd");
     $dumpvars(
       0,
-      ALUOp,
-      cmd,
-      S,
-      NoWrite,
+      clk, reset,
+      Cond,   // Instr[31:28]
+      ALUFlags,
+      Op,     // Instr[27:26]
+      Funct,  // Instr[25:20]
+      Rd,     // Instr[15:12]
+      PCSrc,
+      RegWrite,
+      MemWrite,
+      MemtoReg,
+      ALUSrc,
+      ImmSrc,
+      RegSrc,
       ALUControl,
-      FlagW
+      AddrSrc
     );
     #5;
  end
- `endif */
+ `endif 
 
 endmodule

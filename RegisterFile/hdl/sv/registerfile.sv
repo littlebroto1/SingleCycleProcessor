@@ -21,6 +21,9 @@ module registerfile (
       $dumpvars(
         0,
         clk,
+        rf[0],
+        rf[1],
+        rf[4],
         we3,
         ra1, ra2, wa3,
         wd3, r15, 
