@@ -118,7 +118,11 @@ module DataPath (
         Instr,
         MemAddr, WriteData,
         ReadData,
-        Result
+        Result,
+        PCNext, PCPlus4, PCPlus8,
+        ExtImm,
+        RA1, RA2,
+        Shifted, ALUResult
       );
       #5;
   end
