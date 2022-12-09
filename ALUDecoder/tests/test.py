@@ -1,25 +1,26 @@
 from model import model
 
 import cocotb
-from cocotb.clock import Clock
-from cocotb.triggers import FallingEdge
+from cocotb.triggers import Timer
+from cocotb.types import LogicArray, Logic, Range
 
 @cocotb.test()
-async def test4_17(dut):
+async def test_ALUDecoder(dut):
+    ALUOp = [Logic(x) for x in range(0, 2)]
+    cmd = [LogicArray(x, Range(3, 'downto', 0)) for x in range(0, 2**4)]
+    S = [Logic(x) for x in range(0, 2)]
+    
+    for ALUOp in ALOp:
+        for cmd in cmd:
+            for S in S:
+                dut.NoWrite.value = NoWrite
+                dut.ALUControl.value = ALUControl
+                dut.FlagW.value = FlagW
+                dut.AddSrc.value = AddSrc
 
-    """Test that d propagates to q"""
-
-    clock = Clock(dut.clk, 10, units="us")  # Create a 10us period clock on port clk
-    cocotb.start_soon(clock.start())  # Start the clock
-
-    await FallingEdge(dut.clk)  # Synchronize with the clock
-    state = 0
-    await FallingEdge(dut.clk)  # Synchronize with the clock
-    for val in range(2**4):
-        for enable in range(2):
-            dut.d.value = val  # Assign the random value val to the input port d
-            dut.en.value = enable  # Assign the value for enable
-            await FallingEdge(dut.clk)
-            if enable == 1:
-                state = val
-                assert dut.q.value == state, f"HDL output {dut.q.value} vs {state}"
+    modelResult = model(ALUOp, cmd, S)
+    
+    assert NoWrite == modelResult["NoResult"], f"HDL vs MODEL: {NoWrite} vs {int(modelResult['NoWrite'])}"
+    assert ALUControl == modelResult["ALUControl"].integer, f"HDL vs MODEL: {NoWrite} vs {int(modelResult['NoWrite'])}"
+    assert FlagW == modelResult["FlagW"].integer,
+    assert AddSrc == modelResult["AddSrc"],
